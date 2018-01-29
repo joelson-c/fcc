@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<title>FCC Pomodoro Clock</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
+
+	<link rel='stylesheet prefetch' href='https://fonts.googleapis.com/css?family=Open+Sans'>
+
+	<link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+	<div class="pomodoro-container" id="app">
+		<div class="settings">
+			<div class="stop">
+				Break lenght
+				<br>
+				<button value="minus" @click="removeBreakTime" :disabled="clockTimer !== null">&minus;</button>
+				<span class="current">{{ breakSetting }}</span>
+				<button value="plus" @click="addBreakTime" :disabled="clockTimer !== null">&plus;</button>
+			</div>
+
+			<div class="session">
+				Session lenght
+				<br>
+				<button value="minus" @click="removeSessionTime" :disabled="clockTimer !== null">&minus;</button>
+				<span class="current">{{ sessionSetting }}</span>
+				<button value="plus" @click="addSessionTime" :disabled="clockTimer !== null">&plus;</button>
+			</div>
+		</div>
+
+		<div class="clock" @click="toggleClock">
+			<p class="status">{{ status }}</p>
+			<p>{{ clockTimerDisplay }}</p>
+			<div class="progress" :style="progressStyle"></div>
+		</div>
+
+		<div class="credits">
+			Made by Joelson Carvalho
+		</div>
+	</div>
+
+	<script src='https://unpkg.com/vue/dist/vue.min.js'></script>
+	<script src='https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.17.1/moment.min.js'></script>
+	<script src="js/index.js"></script>
+</body>
+</html>

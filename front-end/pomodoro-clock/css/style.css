@@ -1,0 +1,63 @@
+body {
+  font-family: 'Open Sans', sans-serif;  
+	background-color: #424242;
+	color: #fff;
+}
+
+.pomodoro-container {
+	margin: 5% auto auto auto;
+  text-align: center;
+  width: 50%;
+}
+
+.settings > div {
+	display: inline-block;
+	margin: 20px;
+  font-size: 1.2em;
+	text-transform: uppercase;
+}
+
+.settings button {
+	border: 0;	
+	background-color: transparent;
+	cursor: pointer;
+  padding: 10px;
+  font-size: 1.14em;
+	color: #fff;	
+}
+
+button, button:hover, button:active, button:visited {
+  text-decoration: none !important;
+  outline: none !important;
+}
+
+.clock {
+	border: 2px solid #212121;
+  cursor: pointer;
+	position: relative;
+	z-index: 1;	
+	border-radius: 5px;
+}
+
+.clock p {
+	font-size: 1.8em;
+}
+
+.status {
+	text-transform: capitalize;
+}
+
+.clock .progress {
+	width: 0%;  
+  z-index: -1;    
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 152px;
+	border-radius: 2px;
+}
+
+.credits {
+	margin-top: 30px;
+}

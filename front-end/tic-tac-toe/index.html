@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>FCC Tic Tac Toe</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
+
+  <link rel='stylesheet prefetch' href='https://fonts.googleapis.com/css?family=Open+Sans'>
+
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+  <div class="game">
+    <div id="game-setup">Would you like to be
+      <b>X</b> or
+      <b>O</b> ?
+      <br/>
+      <button class="side-select" value="side_X">X</button>
+      <button class="side-select" value="side_O">O</button>
+    </div>
+    <div id="game-board">
+      <div id="results">
+        Computer -
+        <b>
+          <span id='bot-score'>0</span>
+        </b>
+        &nbsp;X&nbsp; You -
+        <b>
+          <span id='player-score'>0</span>
+        </b>
+        <button class="hard-reset">Reset</button>
+        <span id='current-turn'></span>
+      </div>
+      <div class="squares" data-line="0" data-col="0"></div>
+      <div class="squares" data-line="0" data-col="1"></div>
+      <div class="squares" data-line="0" data-col="2"></div>
+      <div class="squares" data-line="1" data-col="0"></div>
+      <div class="squares" data-line="1" data-col="1"></div>
+      <div class="squares" data-line="1" data-col="2"></div>
+      <div class="squares" data-line="2" data-col="0"></div>
+      <div class="squares" data-line="2" data-col="1"></div>
+      <div class="squares" data-line="2" data-col="2"></div>
+    </div>
+    <div class="credits">Made by Joelson Carvalho</div>
+  </div>
+
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js'></script>
+  <script src="js/index.js"></script>
+</body>
+</html>

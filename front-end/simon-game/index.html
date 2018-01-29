@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<title>FCC Simon Game</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
+
+	<link rel='stylesheet prefetch' href='https://fonts.googleapis.com/css?family=Cabin|VT323'>
+
+	<link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+	<div class="game-container">
+		<div class="upper">
+			<div class="green-btn buttons"></div>
+			<div class="red-btn buttons"></div>
+		</div>
+		<div class="lower">
+			<div class="yellow-btn buttons"></div>
+			<div class="blue-btn buttons"></div>
+		</div>
+
+		<div class="center">
+			<div class="content">
+				<div class="brand">Simon &copy;</div>
+				<div class="count">
+					<div class="count-panel">
+						<div class="count-content"></div>
+					</div>
+					Count
+				</div>
+				<div class="start-btn-wrapper">
+					<button class="start-btn"></button>
+					Start
+				</div>
+
+				<div class="slider strict-mode">
+					<div class="slider-indicator strict"></div>
+					Strict
+				</div>
+
+				<div class="start-game">
+					<div class="slider">
+						<div class="slider-indicator"></div>
+						Off/On
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js'></script>
+	<script src='https://cdnjs.cloudflare.com/ajax/libs/howler/2.0.2/howler.min.js'></script>
+	<script src="js/index.js"></script>
+</body>
+</html>

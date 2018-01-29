@@ -1,0 +1,68 @@
+body {
+  font-family: 'Open Sans', sans-serif;
+  background-color: #9E9E9E;
+}
+
+.calc-container {
+  margin: 5% auto auto auto;
+  text-align: center;
+  width: 50%;
+}
+
+.buttons {  
+  display: inline-block;
+  width: 500px;
+  height: auto;  
+}
+
+.buttons button {  
+  border: none;
+  padding: 10px;  
+  margin-left: -5px;
+  width: 100px;
+  color: #fff;
+  background-color: #424242;
+  height: 90px;
+  font-size: 1.15em;
+}
+
+.buttons .fourth-row button {
+  position: relative;
+}
+
+.buttons .fourth-row button:not(.equals) {
+  position: relative;
+  bottom: 45px;
+  right: 50px;
+}
+
+.buttons button.equals {  
+  height: 165px;
+  right: 49px;
+}
+
+.buttons .fifth-row button {
+  position: relative;
+  bottom: 90px;
+  right: 99.5px;
+}
+
+.buttons button.scientific {
+  background-color: #00695C;
+}
+
+button, button:hover, button:active, button:visited {
+  text-decoration: none !important;
+  outline: none !important;
+}
+
+button:active {
+  background-color: #212121 !important; 
+  
+}
+
+.operations {
+  font-weight: 800;
+  font-size: 1.3em;
+  margin-bottom: 15px;
+}

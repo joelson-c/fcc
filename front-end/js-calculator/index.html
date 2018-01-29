@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>FCC JS Calculator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
+
+  <link rel='stylesheet prefetch' href='https://fonts.googleapis.com/css?family=Open+Sans'>
+
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+  <div class="calc-container">
+    <div class="buttons">
+      <div class="operations">0</div>
+
+      <!-- First Row -->
+      <button value="ac">AC</button>
+      <button value="ce">CE</button>
+      <button value="negate">&plusmn;</button>
+      <button value="/">/</button>
+      <button value="^" class="scientific">^</button>
+
+      <!-- Second Row -->
+      <button value="7">7</button>
+      <button value="8">8</button>
+      <button value="9">9</button>
+      <button value="*">*</button>
+      <button value="factor" class="scientific">!</button>
+
+      <!-- Third Row -->
+      <button value="4">4</button>
+      <button value="5">5</button>
+      <button value="6">6</button>
+      <button value="-">-</button>
+      <button value="square" class="scientific">&radic;</button>
+
+      <!-- Fourth Row -->
+      <div class="fourth-row">
+        <button value="1">1</button>
+        <button value="2">2</button>
+        <button value="3">3</button>
+        <button value="=" class="equals">=</button>
+      </div>
+
+      <!-- Fifth Row -->
+      <div class="fifth-row">
+        <button value="0" class="zero">0</button>
+        <button value=".">.</button>
+        <button value="+">+</button>
+      </div>
+    </div>
+
+    <div class="credits">
+      Made by Joelson Carvalho
+    </div>
+  </div>
+
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js'></script>
+  <script src="js/index.js"></script>
+</body>
+</html>
