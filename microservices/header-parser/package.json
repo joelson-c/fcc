@@ -1,0 +1,22 @@
+{
+  "name": "header-parser",
+  "version": "0.0.1",
+  "description": "A header parser microservice",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tango05/header-parser.git"
+  },
+  "author": "Joelson Santana",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tango05/header-parser/issues"
+  },
+  "homepage": "https://github.com/tango05/header-parser#readme",
+  "dependencies": {
+    "express": "^4.15.2"
+  }
+}

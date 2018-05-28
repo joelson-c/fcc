@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ"
+        crossorigin="anonymous">
+
+    <style>
+        * {
+            margin-top: 2rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+
+        <form method="post" enctype="multipart/form-data" action="/upload">
+            <div class="form-group">
+                <label for="fileInput">Select a file to see its size</label>
+                <input type="file" class="form-control-file" name="fileInput" id="fileInput" aria-describedby="fileHelp">
+                <small id="fileHelp" class="form-text">Max file size: 1MB</small>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+
+        <footer class="mt-5">
+            <p>Made by Joelson Santana</p>
+            <a href="https://github.com/tango05/file-metadata-ms">GitHub Repository</a>
+        </footer>
+    </div>
+</body>
+
+</html>

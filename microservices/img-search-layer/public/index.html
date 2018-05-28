@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>    
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+  </head>
+  <body>
+    <div class="container">
+      <h1>Image Search Abstraction Layer</h1>
+      <h2>User stories</h2>
+
+      <ul>
+        <li>I can get the image URLs, alt text and page urls for a set of images relating to a given search string.</li>
+
+        <li>I can paginate through the responses by adding a ?offset=2 parameter to the URL.</li>
+
+        <li>I can get a list of the most recently submitted search strings.</li>
+      </ul>
+
+      <h2>Example usage</h2>
+      <code>http://localhost:3000/search/&lt;term&gt;</code><br>
+      <code>http://localhost:3000/latest</code> (Recently submitted search strings)
+
+      <h2>Example output</h2>
+      <pre>
+        <code>
+          {
+            url: "https://...",
+            description: "...",
+            thumbnail: "https://...",
+            context: "..."
+          }
+        </code>
+      </pre>      
+    </div>
+  </body>
+</html>

@@ -1,0 +1,24 @@
+{
+  "name": "img-search-layer",
+  "version": "0.0.1",
+  "description": "An image abstraction layer microservice",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tango05/img-search-layer.git"
+  },
+  "author": "Joelson Santana",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tango05/img-search-layer/issues"
+  },
+  "homepage": "https://github.com/tango05/img-search-layer#readme",
+  "dependencies": {
+    "express": "^4.15.2",
+    "google-images": "^2.1.0",
+    "mongoose": "^4.9.1"
+  }
+}

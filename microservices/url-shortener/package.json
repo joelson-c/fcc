@@ -1,0 +1,25 @@
+{
+  "name": "url-shortener",
+  "version": "0.0.1",
+  "description": "An url shortener microservice",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tango05/url-shortener.git"
+  },
+  "author": "Joelson Santana",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tango05/url-shortener/issues"
+  },
+  "homepage": "https://github.com/tango05/url-shortener#readme",
+  "dependencies": {
+    "express": "^4.15.2",
+    "mongoose": "^4.9.1",
+    "mongoose-auto-increment": "^5.0.1",    
+    "valid-url": "^1.0.9"
+  }
+}

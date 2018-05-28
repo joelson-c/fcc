@@ -1,0 +1,23 @@
+{
+  "name": "timestamp-microservice",
+  "version": "0.0.1",
+  "description": "A simple microservice",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tango05/timestamp-microservice.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tango05/timestamp-microservice/issues"
+  },
+  "homepage": "https://github.com/tango05/timestamp-microservice#readme",
+  "dependencies": {
+    "express": "^4.15.2",
+    "moment": "^2.18.0"
+  }
+}
