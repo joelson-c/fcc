@@ -1,0 +1,30 @@
+{
+	"name": "fcc-exercise-tracker",
+	"version": "0.1.0",
+	"description": "A REST API project, part of Free Code Camp's curriculum",
+	"main": "server.js",
+	"scripts": {
+		"start": "node server.js",
+		"test": "jest"
+	},
+	"dependencies": {
+		"body-parser": "^1.15.2",
+		"cors": "^2.8.1",
+		"express": "^4.14.0",
+		"sequelize": "4.42.0",
+		"shortid": "^2.2.6",
+		"sqlite": "^3.0.0"
+	},
+	"devDependencies": {
+		"jest": "^23.6.0",
+		"sequelize-mock": "^0.10.2",
+		"supertest": "^3.3.0"
+	},
+	"engines": {
+		"node": ">=8.12.0",
+		"npm": ">=6.4.1"
+	},
+	"repository": {
+		"url": "https://github.com/joelson-c/fcc"
+	}
+}
