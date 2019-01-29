@@ -7,47 +7,45 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
 
-  <link rel='stylesheet prefetch' href='https://fonts.googleapis.com/css?family=Open+Sans'>
+  <link rel="stylesheet prefetch" href="https://fonts.googleapis.com/css?family=Open+Sans">
 
   <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
-  <div class="game">
-    <div id="game-setup">Would you like to be
-      <b>X</b> or
-      <b>O</b> ?
-      <br/>
-      <button class="side-select" value="side_X">X</button>
-      <button class="side-select" value="side_O">O</button>
-    </div>
-    <div id="game-board">
-      <div id="results">
-        Computer -
-        <b>
-          <span id='bot-score'>0</span>
-        </b>
-        &nbsp;X&nbsp; You -
-        <b>
-          <span id='player-score'>0</span>
-        </b>
-        <button class="hard-reset">Reset</button>
-        <span id='current-turn'></span>
-      </div>
-      <div class="squares" data-line="0" data-col="0"></div>
-      <div class="squares" data-line="0" data-col="1"></div>
-      <div class="squares" data-line="0" data-col="2"></div>
-      <div class="squares" data-line="1" data-col="0"></div>
-      <div class="squares" data-line="1" data-col="1"></div>
-      <div class="squares" data-line="1" data-col="2"></div>
-      <div class="squares" data-line="2" data-col="0"></div>
-      <div class="squares" data-line="2" data-col="1"></div>
-      <div class="squares" data-line="2" data-col="2"></div>
-    </div>
-    <div class="credits">Made by Joelson Carvalho</div>
-  </div>
+  <main class="game">
+    <section class="results">
+      <section class="results__row">
+          <p class="results__item">Computer - <span id="bot-score-board">0</span></p>
+          <p class="results__item">You - <span id="human-score-board">0</span></p>
+      </section>
+      <section class="results__row">
+          <p class="results__status" id="game-status-board"></p>
+          <button class="btn" id="reset-btn">Reset</button>
+      </section>
+    </section>
 
-  <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js'></script>
+    <div class="game-container" id="game-container">
+      <div class="game-container__row">
+        <div class="square" data-id="0"></div>
+        <div class="square" data-id="1"></div>
+        <div class="square" data-id="2"></div>
+      </div>
+      <div class="game-container__row">
+        <div class="square" data-id="3"></div>
+        <div class="square" data-id="4"></div>
+        <div class="square" data-id="5"></div>
+      </div>
+      <div class="game-container__row">
+        <div class="square" data-id="6"></div>
+        <div class="square" data-id="7"></div>
+        <div class="square" data-id="8"></div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="credits">Made by Joelson Carvalho</footer>
+
   <script src="js/index.js"></script>
 </body>
 </html>

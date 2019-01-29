@@ -1,414 +1,402 @@
-var TttGame = function() {
-  var playerSide = null;
-  var computerSide = null; 
-  var playerScore = 0, computerScore = 0;
-  var activeState = {
-    turn: '',
-    board: []
-  };  
-  var boardSize = 3;
-  
-  this.run = function(pSide, botScore, pScore) { 
-   
-    if(pSide === 'side_X' || pSide === 'X') {
-      playerSide = 'X';
-      computerSide = 'O';
-    } 
-    else {
-      playerSide = 'O';
-      computerSide = 'X';
-    } 
-    
-    if(typeof botScore !== 'undefined') {
-      computerScore = botScore;
-      updateInfoBoard();
-    }
-    
-    if(typeof pScore !== 'undefined') {
-      playerScore = pScore;
-      updateInfoBoard();
-    }
-    
-    initVars();
-    
-    $('.squares').text('');
-    
-    if (playerSide === 'X') playerTurn();
-    else computerTurn();
+const HUMAN_ID = 0;
+const AI_ID = 1;
+
+const GAME_SYMBOLS = {
+  'X': HUMAN_ID,
+  'O': AI_ID
+}
+
+const BOARD_LENGTH = 9;
+
+class Game {
+  constructor() {
+    this.playerScore = 0;
+    this.computerScore = 0;
+
+    this.reset();
   }
-  
-  function initVars() {   
-    activeState.board = [];
-    activeState.board = new Array(boardSize).fill(0).map(function(row) {
-      return new Array(boardSize).fill(0);
+
+  reset() {
+    this.turn = null;
+    this.board = new Board();
+
+    this._updateInfoBoard();
+    this.board.renderBoard((squareId) => this._onSquareClick(squareId));
+
+    this._endTurn();
+  }
+
+  /**
+   * Callback for square click event
+   *
+   * @callback onSquareClickCallback
+   * @param {number} squareId
+   */
+  _onSquareClick(squareId) {
+    if (this.board.canPlay(squareId) && this.turn === HUMAN_ID) {
+      this.board.makeMove(squareId, HUMAN_ID);
+
+      this._endTurn();
+    }
+  }
+
+  _computerTurn() {
+    setTimeout(() => {
+      const aiMove = this._findAiMove();
+
+      this.board.makeMove(aiMove, AI_ID);
+
+      this._endTurn();
+    }, 300);
+  }
+
+  /**
+   * Returns the AI move square Id
+   *
+   * @returns {number} The calculated square Id
+   */
+  _findAiMove() {
+    const { availableMoves } = this.board.status;
+    const algorithmDepth = 10;
+
+    const moveRank = Object.keys(availableMoves).map(move => {
+      const board = new Board(this.board.rawBoard);
+      board.simulateMove(move, AI_ID);
+
+      const moveScore = this._negamax(
+        board,
+        algorithmDepth,
+        Number.NEGATIVE_INFINITY,
+        Number.POSITIVE_INFINITY,
+        HUMAN_ID
+      );
+
+      return [move, moveScore];
     });
-    
-    activeState.turn = '';
+
+    let bestScore = Number.POSITIVE_INFINITY;
+
+    const bestMoves = moveRank.reduce((acc, [move, score]) => {
+      if (Math.min(bestScore, score) === score) {
+        bestScore = score;
+
+        acc.length = 0;
+        acc.push(move);
+      } else if (bestScore === score) {
+        acc.push(move);
+      }
+
+      return acc;
+    }, []);
+
+    let candidateMove = null;
+
+    if (bestMoves.length === 1) {
+      candidateMove = bestMoves[0];
+    } else {
+      candidateMove = bestMoves.splice(Math.floor(Math.random() * bestMoves.length), 1);
+    }
+
+    return candidateMove;
   }
-  
-  function playerTurn() {     
-    activeState.turn = playerSide;
-    $('#current-turn').text('Your turn');
-    $('#current-turn').removeClass('ai-turn');
-    $('.squares').removeClass('disabled');
-    
-    $('.squares').click(function() {
-     
-      var squareData = [$(this).data('line'), $(this).data('col')];
-      
-      if(canPlay(squareData, activeState.board)) {        
-        activeState = makeMove(activeState, squareData);
-          
-        endTurn();
-      }    
+
+  /**
+   * The AI algorithm implementation
+   *
+   * [Negamax Reference](https://en.wikipedia.org/wiki/Negamax)
+   *
+   * @param {Board} board The board state
+   * @param {number} depth The algorithm depth
+   * @param {number} alpha alpha pruning
+   * @param {number} beta beta prouning
+   * @param {HUMAN_ID | AI_ID} playerId current player Id
+   */
+  _negamax(board, depth, alpha, beta, playerId) {
+    const { status: nodeStatus } = board;
+
+    if (depth === 0 || nodeStatus.isOver) {
+      let nodeHeuristicValue = 0;
+
+      if (!nodeStatus.isTie) {
+        if (nodeStatus.winnerId === playerId) {
+          nodeHeuristicValue = 100 - depth;
+        } else {
+          nodeHeuristicValue = -100 - depth;
+        }
+      }
+
+      return nodeHeuristicValue;
+    }
+
+    let value = Number.NEGATIVE_INFINITY;
+
+    Object.keys(nodeStatus.availableMoves).forEach(move => {
+      board.simulateMove(move, playerId);
+
+      const nextPlayer = (playerId === HUMAN_ID) ? AI_ID : HUMAN_ID;
+
+      value = Math.max(value, -this._negamax(board, depth - 1, -beta, -alpha, nextPlayer));
+      alpha = Math.max(alpha, value);
+
+      board.undoMove(move);
+
+      if (alpha >= beta) {
+        return; // cut-off
+      }
+
     });
+
+    return value;
   }
-  
-  function computerTurn() {
-    $('#current-turn').text('AI turn');
-    $('#current-turn').addClass('ai-turn');
-    
-    activeState.turn = computerSide;
-    
-    setTimeout(function() {
-      var aiMove = findAiMove(activeState);
-    
-      activeState = makeMove(activeState, aiMove);
-    
-      endTurn();
-    }, 500);    
-  }
-  
-  function findAiMove(state) {    
-    // Block moves
-    // Fork
-    if((state.board[0, 0] === playerSide && state.board[2, 0] === playerSide)
-       && canPlay([2, 2], state.board)) {      
-      return [2 , 2];
-    } 
-    else if((state.board[0, 0] === playerSide &&
-           state.board[2, 2] === playerSide)
-            && canPlay([0, 2], state.board)) {      
-      return [0 , 2];
-    }
-    else if((state.board[0, 2] === playerSide &&
-           state.board[0, 0] === playerSide)
-            && canPlay([2, 0], state.board)) {      
-      return [2 , 0];
-    }
-    // Column
-    for(i = 0; i < boardSize; i++){
-      if(state.board[0][i] === playerSide && state.board[1][i] === playerSide) {
-        if(canPlay([2, i], state.board)) return [2, i];
-      }
-      else if(state.board[1][i] === playerSide && state.board[2][i] === playerSide) {
-        if(canPlay([2, i], state.board)) return [0, i];
-      }
-      else if(state.board[2][i] === playerSide && state.board[0][i] === playerSide) {        
-        if(canPlay([1, i], state.board)) return [1, i];
-      }
-    }
 
-    // Line
-    for(i = 0; i < boardSize; i++){
-      if(state.board[i][0] === playerSide && state.board[i][1] === playerSide) {
-        if(canPlay([i, 2], state.board)) return [i, 2];
-      }
-      else if(state.board[i][1] === playerSide && state.board[i][2] === playerSide) {
-        if(canPlay([i, 0], state.board)) return [i, 0];
-      }
-      else if(state.board[i][2] === playerSide && state.board[i][0] === playerSide) {        
-        if(canPlay([i, 1], state.board)) return [i, 1];
-      }
-    }
+  _endTurn() {
+    const { isOver, winnerId, isTie } = this.board.status;
 
-    // Diagonals
+    if (isOver) {
+      if(winnerId === HUMAN_ID) {
+        this._updateGameStatusBoard('You\'ve won!');
+        this.playerScore++;
 
-    // Main Diagonal
-    if(state.board[0][0] === playerSide && state.board[1][1] === playerSide) {
-      if(canPlay([2, 2], state.board)) return [2, 2];
-    }
-    else if(state.board[1][1] === playerSide && state.board[2][2] === playerSide) {
-      if(canPlay([0, 0], state.board)) return [0, 0];
-    }
-    else if(state.board[0][0] === playerSide && state.board[2][2] === playerSide) {       
-      if(canPlay([1, 1], state.board)) return [1, 1];
-    }
-
-    // Aux Diagonal
-    else if(state.board[0][2] === playerSide && state.board[1][1] === playerSide) {
-      if(canPlay([2, 0], state.board)) return [2, 0];
-    }
-    else if(state.board[1][1] === playerSide && state.board[2][0] === playerSide) {
-      if(canPlay([0, 2], state.board)) return [0, 2];
-    }
-    else if(state.board[0][2] === playerSide && state.board[2][0] === playerSide) {
-      if(canPlay([1, 1], state.board)) return [1, 1];
-    }
-    
-    // Attack moves 
-    var optimalAiMoves = [
-        [0, 0],
-        [1, 1],
-        [0 ,2],
-        [2, 0],
-        [2, 2],
-        [2, 1]
-    ];
-    
-    if(isFirstMove(activeState)) {
-      return optimalAiMoves[Math.floor(Math.random() * optimalAiMoves.length)];      
-    }   
-    else {
-      // Column
-      for(i = 0; i < boardSize; i++){
-        if(state.board[0][i] === computerSide && state.board[1][i] === computerSide) {
-          if(canPlay([2, i], state.board)) return [2, i];          
-        }
-        else if(state.board[1][i] === computerSide && state.board[2][i] === computerSide) {          
-          if(canPlay([0, i], state.board)) return [0, i];     
-        }
-        else if(state.board[2][i] === computerSide && state.board[0][i] === computerSide) {
-          if(canPlay([1, i], state.board)) return [1, i];     
-        }
+      }
+      else if(winnerId === AI_ID) {
+        this._updateGameStatusBoard('You\'ve lost!');
+        this.computerScore++;
+      }
+      else if(isTie) {
+        this._updateGameStatusBoard('There is a draw!');
       }
 
-      // Line
-      for(i = 0; i < boardSize; i++){
-        if(state.board[i][0] === computerSide && state.board[i][1] === computerSide) {
-          if(canPlay([i, 2], state.board)) return [i, 2];     
-        }
-        else if(state.board[i][1] === computerSide && state.board[i][2] === computerSide) {
-          if(canPlay([i, 0], state.board)) return [i, 0];
-        }
-        else if(state.board[i][2] === computerSide && state.board[i][0] === computerSide) {
-          if(canPlay([i, 1], state.board)) return [i, 1];
-        }
-      }
+      setTimeout(() => {
+        this._updateInfoBoard();
 
-      // Diagonals
-
-      // Main Diagonal
-      if(state.board[0][0] === computerSide && state.board[1][1] === computerSide) {
-        if(canPlay([2, 2], state.board)) return [2, 2];
-      }
-      else if(state.board[1][1] === computerSide && state.board[2][2] === computerSide) {
-        if(canPlay([0, 0], state.board)) return [0, 0];
-      }
-      else if(state.board[0][0] === computerSide && state.board[2][2] === computerSide) {
-        if(canPlay([1, 1], state.board)) return [1, 1];
-      }
-
-      // Aux Diagonal
-      else if(state.board[0][2] === computerSide && state.board[1][1] === computerSide) {
-        if(canPlay([2, 0], state.board)) return [2, 0];
-      }
-      else if(state.board[1][1] === computerSide && state.board[2][0] === computerSide) {        
-        if(canPlay([0, 2], state.board)) return [0, 2];
-      }
-      else if(state.board[0][2] === computerSide && state.board[2][0] === computerSide) {
-        if(canPlay([1, 1], state.board)) return [1, 1];
-      }
-    }
-    
-    // Second move - Intermediary Moves
-    var avMoves = getAvailableMoves(state);
-    var counter = 0;
-    var rndMove = [];  
-    if(canPlay([1, 1], state.board)) {       
-      return [1, 1];
-    }    
-    else if(avMoves.length > 1) {          
-      while(counter < optimalAiMoves.length) {
-        var tmpMove = optimalAiMoves[Math.floor(Math.random() * optimalAiMoves.length)];
-        if(canPlay(tmpMove, state.board))
-        {
-          rndMove = tmpMove;
-          break;
-        }
-        
-        counter++;        
-      } 
-      
-      if(counter >= optimalAiMoves.length) { // Can't find any optimal move
-        counter = 0;
-        while(counter < avMoves.length) {
-          var tmpMove = avMoves[Math.floor(Math.random() * avMoves.length)];
-          if(canPlay(tmpMove, state.board))
-          {
-            rndMove = tmpMove;
-            break;
-          } 
-          
-          counter++;
-        }       
-      }
-      
-      return rndMove;
-    }    
-    else if(avMoves.length === 1) { // Last move
-      return avMoves[0];
-    }
-  }
-  
-  function endTurn() {     
-    if(checkGameOver(activeState)) {
-      var winner = getWinner(activeState);
-      var newGame = new TttGame();      
-      
-      if(winner === playerSide) {        
-        $('#current-turn').text('You\'ve won!');
-        setTimeout(function() {
-          updateInfoBoard();
-          newGame.run(playerSide, computerScore, ++playerScore);
-        }, 2000);
-        
-      }
-      else if(winner === computerSide) {        
-        $('#current-turn').text('You\'ve lost!');
-        setTimeout(function() {          
-          newGame.run(playerSide, ++computerScore, playerScore);
-        }, 2000);
-      }
-      else if(winner === 'tie') {        
-        $('#current-turn').text('There is a draw!');
-        setTimeout(function() {          
-          newGame.run(playerSide, computerScore, playerScore);
-        }, 2000);
-      }
+        this.reset();
+      }, 2000);
     }
     else {
-      if(activeState.turn === playerSide) {
-      
-        $('.squares').off();
-        $('.squares').toggleClass('disabled');
-        computerTurn();
-      }
-      else {
-        $('.squares').toggleClass('disabled');
+      if (this.turn === HUMAN_ID) {
+        this._updateGameStatusBoard('AI turn');
 
-        playerTurn();
-      }
-    }
-  }
-  
-  function getWinner(state) {
-    var board = state.board;
-    var win = checkColumn(board) || checkRow(board) || checkDiagonal(board);
-    
-    if(getAvailableMoves(state).length === 0 && typeof win === 'undefined') {
-      return 'tie';
-    }
-    
-    return win;
-  }  
-  
-  function getAvailableMoves(state) {
-    var board = state.board;
-    var avMoves = [];
-    
-    for(i = 0; i < boardSize; i++) {
-      for(j = 0; j < boardSize; j++) {
-        if(board[i][j] === 0) {
-          avMoves.push([i , j]);
-        }
-      }
-    }
-    
-    return avMoves;
-  }
-  
-  function isFirstMove(state) {
-    var board = state.board;
-    
-    for(i = 0; i < boardSize; i++) {
-      for(j = 0; j < boardSize; j++) {
-        if(board[i][j] === playerSide || board[i][j] === computerSide) {
-          return false;
-        }
-      }
-    }
-    
-    return true;
-  }
-  
-  function checkColumn(board) {
-    for(i = 0; i < 3; i++) { 
-      if(board[0][i] !== 0) {
-        if((board[0][i] === board[1][i]) && (board[1][i] === board[2][i])) {
-          return board[0][i];
-        }
-      }
-    }
-  }
-  
-  function checkRow(board) {    
-    for(i = 0; i < 3; i++) {   
-      if(board[i][0] !== 0) {
-        if((board[i][0] === board[i][1]) && (board[i][1] === board[i][2])) {
-          return board[i][0];
-        }
-      }
-    }
-  }
-  
-  function checkDiagonal(board) {   
-    if(board[0][0] !== 0) {
-      if((board[0][0] === board[1][1]) && (board[1][1] === board[2][2])) {
-        return board[0][0];
-      }  
-    }
-    
-    if(board[2][0] !== 0) {
-      if((board[2][0] === board[1][1]) && (board[1][1] === board[0][2])) {
-        return board[2][0];
+        this._toggleBoard(true);
+
+        this.turn = AI_ID;
+        this._computerTurn();
+      } else {
+        this._updateGameStatusBoard('Your turn');
+
+        this._toggleBoard();
+
+        this.turn = HUMAN_ID;
       }
     }
   }
 
-  function checkGameOver(state) {     
-    return (typeof getWinner(state) !== 'undefined');
+  _updateInfoBoard() {
+    const aiScoreBoard = document.getElementById('bot-score-board');
+    aiScoreBoard.innerText = this.computerScore;
+
+    const humanScoreBoard = document.getElementById('human-score-board');
+    humanScoreBoard.innerText = this.playerScore;
   }
-  
-  function canPlay(move, board) {    
-    if(board[move[0]][move[1]] !== 0) return false;
-    else return true;
+
+  _toggleBoard(disableIt = false) {
+    const container = document.getElementById('game-container');
+
+    if (disableIt) {
+      container.classList.add('disabled');
+    } else {
+      container.classList.remove('disabled');
+    }
   }
-  
-  function makeMove(state, move) {
-    var newState = $.extend(true, {}, state);
-    
-    newState.board[move[0]][move[1]] = (state.turn === playerSide) ? playerSide : computerSide; 
-    
-    drawMove(move, (state.turn === playerSide) ? playerSide : computerSide);
-    
-    return newState;
+
+  _updateGameStatusBoard(text) {
+    const statusBoard = document.getElementById('game-status-board');
+
+    statusBoard.innerText = text;
   }
-  
-  function drawMove(move, side) {      
-    $('div[data-line='+ move[0] +'][data-col='+ move[1] +']').text(side);    
-  }
-  
-  function updateInfoBoard() {
-    $('#bot-score').text(computerScore);
-    $('#player-score').text(playerScore);    
+
+  static getPlayerSymbol(playerId) {
+    return Object.keys(GAME_SYMBOLS).filter(objKey => GAME_SYMBOLS[objKey] === playerId);
   }
 }
 
-$(document).ready(function() {
-  var game = new TttGame();
-  
-  $('.side-select').click(function() { 
-    var selectedSide = $(this).val();
-    
-    $('#game-setup').hide();
-    $('#game-board').show('fast', function() {
-      game.run(selectedSide, 0, 0);      
+class Board {
+  /**
+   * Initial board state
+   *
+   * @constructor
+   * @typedef {Array<HUMAN_ID | AI_ID | undefined>} boardArray
+   * @param {boardArray} board
+   */
+  constructor(board = Array.from({ length: BOARD_LENGTH })) {
+    /**
+     * The board data array.
+     * Each array item represents an square.
+     * If the square is empty then its value will be equal to `undefined`.
+     * If the square is not empty then its value will be equal to the player Id which played
+     * in that square.
+     *
+     * @type {boardArray}
+     */
+    this.rawBoard = board;
+  }
+
+  /**
+   * Gets the board status obj
+   */
+  get status() {
+    const winner = this._winner;
+    const avMoves = this._getAvailableMoves();
+    const avMovesCount = Object.keys(avMoves).length;
+
+    return {
+      winnerId: winner,
+      availableMoves: avMoves,
+      isTie: winner === null && avMovesCount === 0,
+      isOver: winner !== null || avMovesCount === 0
+    }
+  }
+
+
+  /**
+   * Mutates the current state and updates the specified square with the player Id.
+   * This function also renders the player symbol in the specified square.
+   *
+   * @param {number} squareId
+   * @param {HUMAN_ID | AI_ID} playerId
+   */
+  makeMove(squareId, playerId) {
+    const newBoard = [...this.rawBoard];
+    newBoard[squareId] = playerId;
+
+    const square = document.querySelector(`.square[data-id="${squareId}"]`);
+    square.innerText = Game.getPlayerSymbol(playerId);
+
+    this.rawBoard = newBoard;
+  }
+
+  /**
+   * Mutates the current state and updates the specified square with the player Id.
+   * This function does not touch the DOM.
+   *
+   * @param {number} squareId
+   * @param {HUMAN_ID | AI_ID} playerId
+   */
+  simulateMove(squareId, playerId) {
+    const newBoard = [...this.rawBoard];
+    newBoard[squareId] = playerId;
+
+    this.rawBoard = newBoard;
+  }
+
+  /**
+   * Mutates the current state and sets the specified square to `undefined`.
+   *
+   * @param {number} squareId
+   */
+  undoMove(squareId) {
+    const newBoard = [...this.rawBoard];
+    newBoard[squareId] = undefined;
+
+    this.rawBoard = newBoard;
+  }
+
+  /**
+   * Renders an empty game board into the DOM.
+   *
+   * @param {onSquareClickCallback} onSquareClickCallback
+   */
+  renderBoard(onSquareClickCallback) {
+    const squareElemList = document.querySelectorAll('.square');
+
+    for (const square of squareElemList) {
+      square.textContent = '';
+
+      square.addEventListener('click', () => onSquareClickCallback(square.dataset.id));
+    }
+  }
+
+  /**
+   * Verifies if the specified square is `undefined` (empty).
+   * @param {number} squareId
+   */
+  canPlay(squareId) {
+    return this.rawBoard[squareId] === undefined;
+  }
+
+
+  /**
+   * Gets the available moves in the current board state
+   *
+   * @returns {Object<number, boolean>} The available moves obj
+   */
+  _getAvailableMoves() {
+    const avMoves = {};
+
+    this.rawBoard.forEach((_, squareId) => {
+      if (this.canPlay(squareId)) {
+        avMoves[squareId] = true;
+      }
     });
-  });
-  
-  $('.hard-reset').click(function() {
-    $('#game-setup').show();
-    $('#game-board').hide();
-  });
+
+    return avMoves;
+  }
+
+
+  /**
+   * Gets the game winner
+   *
+   * Board layout:
+   * ```javascript
+   * [0, 1, 2]
+   * [3, 4, 5]
+   * [6, 7, 8]
+   * ```
+   *
+   * @returns {HUMAN_ID | AI_ID | null} the winner's player id or null if there isn't a winner
+   */
+  get _winner() {
+    const board = this.rawBoard;
+
+    if (board.length > 3) {
+      // Rows
+      if (board[0] !== undefined && board[0] === board[1] && board[1] === board[2]) {
+        return board[0];
+      } else if (board[3] !== undefined && board[3] === board[4] && board[4] === board[5]) {
+        return board[3];
+      } else if (board[6] !== undefined && board[6] === board[7] && board[7] === board[8]) {
+        return board[6];
+      }
+
+      // Columns
+      if (board[0] !== undefined && board[0] === board[3] && board[3] === board[6]) {
+        return board[0];
+      } else if (board[1] !== undefined && board[1] === board[4] && board[4] === board[7]) {
+        return board[1];
+      } else if (board[2] !== undefined && board[2] === board[5] && board[5] === board[8]) {
+        return board[2];
+      }
+
+      // Diagonals
+      if (board[0] !== undefined && board[0] === board[4] && board[4] === board[8]) {
+        return board[0];
+      } else if (board[6] !== undefined && board[6] === board[4] && board[4] === board[2]) {
+        return board[6];
+      }
+    }
+
+    return null;
+  }
+}
+
+
+document.addEventListener('DOMContentLoaded', () => {
+  const game = new Game();
+
+  const resetBtn = document.getElementById('reset-btn');
+
+  resetBtn.addEventListener('click', () => {
+    game.playerScore = 0;
+    game.computerScore = 0;
+    game.reset();
+  })
 });
