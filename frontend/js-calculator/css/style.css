@@ -1,67 +1,60 @@
 body {
-  font-family: 'Open Sans', sans-serif;
-  background-color: #9E9E9E;
+  font-family: "Open Sans", sans-serif;
+  background-color: #9e9e9e;
 }
 
 .calc-container {
-  margin: 5% auto auto auto;
-  text-align: center;
   width: 50%;
+  margin: 30px auto;
+}
+@media (max-width: 800px) {
+  .calc-container {
+    width: 90%;
+  }
 }
 
-.buttons {  
-  display: inline-block;
-  width: 500px;
-  height: auto;  
+.btn-container {
+  background-color: #424242;
 }
 
-.buttons button {  
+.row {
+  display: flex;
+  flex-flow: row;
+  justify-content: center;
+}
+.row--transparent {
+  background-color: transparent;
+}
+
+button, .placeholder {
+  flex: 1 0 0;
   border: none;
-  padding: 10px;  
-  margin-left: -5px;
-  width: 100px;
+  padding: 0;
   color: #fff;
   background-color: #424242;
   height: 90px;
   font-size: 1.15em;
 }
 
-.buttons .fourth-row button {
-  position: relative;
+button:active, button:focus {
+  text-decoration: none;
+  outline: 0;
+}
+button:hover {
+  background-color: #212121;
+  transition: 0.5s all;
 }
 
-.buttons .fourth-row button:not(.equals) {
-  position: relative;
-  bottom: 45px;
-  right: 50px;
+.btn__scientific {
+  background-color: #00695c;
 }
 
-.buttons button.equals {  
-  height: 165px;
-  right: 49px;
+.placeholder {
+  padding: 0;
+  width: 120px;
 }
 
-.buttons .fifth-row button {
-  position: relative;
-  bottom: 90px;
-  right: 99.5px;
-}
-
-.buttons button.scientific {
-  background-color: #00695C;
-}
-
-button, button:hover, button:active, button:visited {
-  text-decoration: none !important;
-  outline: none !important;
-}
-
-button:active {
-  background-color: #212121 !important; 
-  
-}
-
-.operations {
+.expression {
   font-weight: 800;
   font-size: 1.3em;
   margin-bottom: 15px;

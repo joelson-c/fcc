@@ -5,62 +5,66 @@
   <meta charset="UTF-8">
   <title>FCC JS Calculator</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css">
 
-  <link rel='stylesheet prefetch' href='https://fonts.googleapis.com/css?family=Open+Sans'>
+  <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Open+Sans'>
 
   <link rel="stylesheet" href="css/style.css">
 </head>
-
 <body>
-
   <div class="calc-container">
-    <div class="buttons">
-      <div class="operations">0</div>
+    <div class="row row--transparent">
+      <div class="expression">0</div>
+    </div>
 
-      <!-- First Row -->
-      <button value="ac">AC</button>
-      <button value="ce">CE</button>
-      <button value="negate">&plusmn;</button>
-      <button value="/">/</button>
-      <button value="^" class="scientific">^</button>
+    <div class="btn-container">
+      <div class="row">
+        <!-- First Row -->
+        <button value="ac">AC</button>
+        <button value="ce">CE</button>
+        <button value="negate">&plusmn;</button>
+        <button value="/">/</button>
+        <button value="^" class="btn__scientific">^</button>
+      </div>
 
-      <!-- Second Row -->
-      <button value="7">7</button>
-      <button value="8">8</button>
-      <button value="9">9</button>
-      <button value="*">*</button>
-      <button value="factor" class="scientific">!</button>
-
-      <!-- Third Row -->
-      <button value="4">4</button>
-      <button value="5">5</button>
-      <button value="6">6</button>
-      <button value="-">-</button>
-      <button value="square" class="scientific">&radic;</button>
-
-      <!-- Fourth Row -->
-      <div class="fourth-row">
+      <div class="row">
+        <!-- Second Row -->
+        <button value="7">7</button>
+        <button value="8">8</button>
+        <button value="9">9</button>
+        <button value="*">*</button>
+        <button value="fact" class="btn__scientific">!</button>
+      </div>
+      <div class="row">
+        <!-- Third Row -->
+        <button value="4">4</button>
+        <button value="5">5</button>
+        <button value="6">6</button>
+        <button value="-">-</button>
+        <button value="square_root" class="btn__scientific">&radic;</button>
+      </div>
+      <div class="row">
+        <!-- Fourth Row -->
         <button value="1">1</button>
         <button value="2">2</button>
         <button value="3">3</button>
-        <button value="=" class="equals">=</button>
+        <button value="+">+</button>
+        <span class="placeholder"></span>
       </div>
-
-      <!-- Fifth Row -->
-      <div class="fifth-row">
+      <div class="row">
+        <!-- Fifth Row -->
+        <span class="placeholder"></span>
         <button value="0" class="zero">0</button>
         <button value=".">.</button>
-        <button value="+">+</button>
+        <button value="=" class="btn__equals">=</button>
+        <span class="placeholder"></span>
       </div>
     </div>
 
-    <div class="credits">
-      Made by Joelson Carvalho
+    <div class="row row--centered">
+      <p>Made by Joelson Carvalho</p>
     </div>
   </div>
-
-  <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js'></script>
   <script src="js/index.js"></script>
 </body>
 </html>

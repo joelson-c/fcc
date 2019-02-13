@@ -1,210 +1,165 @@
-$(document).ready(function() {
-  var operations = [0];
-  var SIGNS = /(?:\+|-|\/|\*|\^)/;
-  var FUNCTIONS = /(?:negate|sqrt|fact)(?!\(\)\d)/i;
+let expression = [0];
 
-  $('button').click(function() {
-    var btnValue = $(this).val();
+/* Sign definition example:
+* @example
+* ```js
+* {
+*   sign_id: html_sign_name
+* }
+* ```
+*/
+const SIGNS = {
+  plus: '+',
+  minus: '-',
+  times: '*',
+  division: '/',
+  pow: '^'
+};
 
-    if(btnValue === 'ac') {
-      operations = [0];
-    }
-    else if(btnValue === 'ce') {
-      operations = clearNumbers();
+/* Function definition example:
+* @example
+* ```js
+* {
+*   html_func_name: (param) => param + 1
+* }
+* ```
+*/
+const FUNCTIONS = {
+  negate: (param) => -param,
+  square_root: (param) => Math.sqrt(param),
+  fact: (param) => {
+    let factoredNum = 1;
+    const numToFact = param;
 
-      if(operations.length === 1 || operations[1] === null || operations[1] === undefined) {
-        operations = [0];
-      }
-    }
-    else if(btnValue === 'negate') {
-      addFunction('negate');
-    }
-    else if(btnValue === 'square') {
-      addFunction('sqrt');
-    }
-    else if(btnValue === 'factor') {
-      addFunction('fact');
-    }
-    else {
-      if(SIGNS.test(btnValue) && btnValue !== '=') {
-        if(operations[operations.length - 1] !== btnValue) {
-          operations.push(btnValue);
-        }
-      }
-      else if(btnValue === '=') {
-        var operationResult = 0;
-
-        operations.forEach(function(elem, idx) {
-          if(SIGNS.test(elem) && operations[idx + 1] !== undefined) {
-            switch(elem) {
-              case '+':
-                if(operationResult === 0) {
-                  operationResult += getNumBeforeSign(idx) + getNumAfterSign(idx);
-                }
-                else {
-                  operationResult += getNumAfterSign(idx);
-                }
-                break;
-              case '-':
-                if(operationResult === 0) {
-                  operationResult += getNumBeforeSign(idx) - getNumAfterSign(idx);
-                }
-                else {
-                  operationResult -= getNumAfterSign(idx);
-                }
-                break;
-              case '*':
-                if(operationResult === 0) {
-                  operationResult += getNumBeforeSign(idx) * getNumAfterSign(idx);
-                }
-                else {
-                  operationResult *= getNumAfterSign(idx);
-                }
-                break;
-              case '/':
-                if(operationResult === 0) {
-                  operationResult += getNumBeforeSign(idx) / getNumAfterSign(idx);
-                }
-                else {
-                  operationResult /= getNumAfterSign(idx);
-                }
-                break;
-              case '^':
-                if(operationResult === 0) {
-                  operationResult += Math.pow(getNumBeforeSign(idx),getNumAfterSign(idx));
-                }
-                else {
-                  operationResult += Math.pow(operationResult, getNumAfterSign(idx));
-                }
-                break;
-            }
-          }
-          else if(FUNCTIONS.test(elem) && operations[idx + 1] === undefined) {
-            operationResult = parseFunctions(elem);
-          }
-        });
-
-        operations = [operationResult];
-        $('.operations').text(operationResult);
-      }
-      else {
-        if(operations.length === 1 && operations[0] == 0 && btnValue !== '.' ||
-           FUNCTIONS.test(operations[operations.length - 1])) {
-          operations = [btnValue];
-        }
-        else {
-          operations.push(btnValue);
-        }
-      }
+    for (let i = numToFact; i > 0; i--) {
+      factoredNum *= i;
     }
 
-    function addFunction(funcName) {
-      var slicedNum = operations.slice(getLastTypedNumIdx()).join('');
+    return factoredNum;
+  }
+};
 
-      operations = clearNumbers();
-
-      if(FUNCTIONS.test(slicedNum)) {
-        slicedNum = parseFunctions(slicedNum);
-      }
-
-      if(funcName === 'negate' && slicedNum < 0) {
-        operations.push(Math.abs((+slicedNum)));
-      }
-      else {
-        operations.push(funcName + '(' + (+slicedNum) + ')');
-      }
-    }
-
-    function clearNumbers() {
-      var newArr = operations;
-
-      for(i = newArr.length; i >= 0; i--) {
-        if(SIGNS.test(newArr[i])) {
-          break;
-        }
-        else {
-           newArr[i] = null;
-        }
-      }
-
-      return newArr;
-    }
-
-    function getLastTypedNumIdx() {
-      var numIdx = 0;
-      for (i = operations.length; i > 0; i--) {
-        if(SIGNS.test(operations[i])) {
-          numIdx = i + 1;
-          break;
-        }
-      }
-
-      return numIdx;
-    }
-
-    function getNumBeforeSign(signIdx) {
-      var num = [];
-
-      for(i = signIdx - 1; i >= 0; i--) {
-
-        if(Number.isNaN((+operations[i])) === false || operations[i] === '.') {
-          num.push(operations[i]);
-        }
-        else if(SIGNS.test(operations[i]) === false) {
-          num.push(parseFunctions(operations[i]));
-        }
-        else if(SIGNS.test(operations[i])) {
-          break;
-        }
-      }
-
-      return Number(num.reverse().join(''));
-    }
-
-    function getNumAfterSign(signIdx) {
-      var num = [];
-      for(i = signIdx + 1; i < operations.length; i++) {
-        if(Number.isNaN((+operations[i])) === false && SIGNS.test(operations[i]) === false) {
-          num.push(operations[i]);
-        }
-        else if(SIGNS.test(operations[i]) === false) {
-          num.push(parseFunctions(operations[i]));
-        }
-        else if(SIGNS.test(operations[i])) {
-          break;
-        }
-      }
-
-      return (+num.join(''));
-    }
-
-    function parseFunctions(numFunc) {
-      if(FUNCTIONS.test(numFunc)) {
-        var toParseNum = numFunc.match(/[^a-z()]+/i)[0];
-        var calcFunc = numFunc.match(FUNCTIONS)[0];
-
-        switch(calcFunc) {
-          case 'negate':
-            return (-toParseNum);
-
-          case 'sqrt':
-            return Math.sqrt(toParseNum);
-
-          case 'fact':
-            var factoredNum = 1;
-            var numToFact = toParseNum;
-
-            for(i = numToFact; i > 0; i--) {
-              factoredNum *= i;
-            }
-
-            return factoredNum;
-        }
-      }
-
-      return numFunc;
-    }
-
-    $('.operations').text(operations.join(''));
-  });
+const buttons = document.querySelectorAll('button');
+buttons.forEach(btn => {
+  if (btn.value === '=') {
+    btn.addEventListener('click', resolveExpression);
+  } else {
+     btn.addEventListener('click', onBtnClick);
+  }
 });
+
+function onBtnClick(event) {
+  const btnValue = event.target.value;
+
+  if (btnValue === "ac") {
+    expression = [0];
+  } else if (btnValue === "ce") {
+    if (expression.length === 1) {
+      expression = [0];
+    } else {
+      expression.pop();
+    }
+  } else if (isElemAFunction(btnValue)) {
+    addFunction(btnValue);
+  } else {
+    if (isElemASign(btnValue)) {
+      const lastItem = expression[expression.length - 1];
+
+      if (lastItem !== btnValue && !isElemASign(lastItem)) {
+        expression.push(btnValue);
+      }
+    } else {
+      if (expression[0] == 0 && btnValue !== ".") {
+        expression = [btnValue];
+      } else {
+        expression.push(btnValue);
+      }
+    }
+  }
+
+  updateExpressionDisplay();
+}
+
+function resolveExpression() {
+  let expResult = 0;
+  const signRegExp = /(\+|-|\/|\*|\^)/g;
+
+  const expStr = expression.join("");
+  const formattedExp = expStr.split(signRegExp).map(elem => isElemASign(elem) ? elem : Number(elem));
+
+  if (formattedExp.length > 1) {
+    expResult = formattedExp.reduce((acc, elem, idx) => {
+      if (isElemASign(elem)) {
+        const numAfterSign = formattedExp[idx + 1];
+
+        switch (elem) {
+          case SIGNS.plus:
+            acc += numAfterSign;
+            break;
+          case SIGNS.minus:
+            acc -= numAfterSign;
+            break;
+          case SIGNS.times:
+            acc *= numAfterSign;
+            break;
+          case SIGNS.division:
+            acc /= numAfterSign;
+            break;
+          case SIGNS.pow:
+            acc += Math.pow(acc, numAfterSign);
+            break;
+        }
+      }
+
+      return acc;
+    }, formattedExp[0]);
+  } else {
+    expResult = formattedExp[0];
+  }
+
+  expression = [expResult];
+  updateExpressionDisplay();
+}
+
+function addFunction(funcName) {
+  const { value: lastTypedNum, idx: lastTypedNumIdx } = getLastTypedNum();
+
+  expression = expression.slice(0, lastTypedNumIdx);
+  expression.push(parseFunction(funcName, lastTypedNum));
+}
+
+function getLastTypedNum() {
+  let numIdx = 0;
+  for (let i = expression.length; i > 0; i--) {
+    if (isElemASign(expression[i])) {
+      numIdx = i + 1;
+      break;
+    }
+  }
+
+  return {
+    value: expression.slice(numIdx).join(""),
+    idx: numIdx
+  };
+}
+
+function parseFunction(funcName, param) {
+  if (FUNCTIONS[funcName] !== undefined) {
+    return FUNCTIONS[funcName](param);
+  }
+
+  return param;
+}
+
+function isElemAFunction(elem) {
+  return FUNCTIONS[elem] !== undefined;
+}
+
+function isElemASign(elem) {
+  return /^(\+|-|\/|\*|\^)$/.test(elem);
+}
+
+function updateExpressionDisplay() {
+  const opContainer = document.querySelector('.expression');
+  opContainer.textContent = expression.join("");
+}
